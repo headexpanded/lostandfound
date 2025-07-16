@@ -4,7 +4,7 @@ A full-stack application built with Laravel 12 backend and Quasar 2 frontend.
 
 ## Architecture
 
-- **Backend**: Laravel 12 (PHP 8.3) with MySQL 8.0
+- **Backend**: Laravel 12 (PHP 8.3)
 - **Frontend**: Quasar 2 (Vue 3 + TypeScript)
 - **Web Server**: Nginx
 - **Database**: MySQL 8.0
@@ -32,7 +32,7 @@ A full-stack application built with Laravel 12 backend and Quasar 2 frontend.
 
 3. **Build and start the containers**
    ```bash
-   docker-compose up --build
+   docker compose up -d --build
    ```
 
 4. **Access the applications**
@@ -88,39 +88,39 @@ FRONTEND_URL=http://localhost:8080
 
 ### Start services
 ```bash
-docker-compose up
+docker compose up
 ```
 
 ### Start services in background
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Stop services
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Rebuild containers
 ```bash
-docker-compose up --build
+docker compose up -d --build
 ```
 
 ### View logs
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### Access container shell
 ```bash
 # Backend
-docker-compose exec php-fpm sh
+docker compose exec php-fpm bash
 
 # Frontend
-docker-compose exec frontend sh
+docker compose exec frontend sh
 
 # Database
-docker-compose exec mysql mysql -u root -p
+docker compose exec mysql mysql -u root -p
 ```
 
 ## Development
