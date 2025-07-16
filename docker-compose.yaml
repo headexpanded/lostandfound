@@ -1,0 +1,89 @@
+# lostandfound/docker-compose.yaml
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+      - "8443:443"
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/nginx:/etc/nginx/conf.d
+    depends_on:
+      php-fpm:
+        condition: service_healthy
+    networks:
+      - lostandfound-network
+    restart: unless-stopped
+
+  php-fpm:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/var/www/html
+    expose:
+      - "9000"
+    environment:
+      - DB_DATABASE=${DB_DATABASE:-lostandfound_db}
+      - DB_USERNAME=${DB_USERNAME:-lostandfound_user}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - APP_ENV=${APP_ENV:-local}
+      - APP_DEBUG=${APP_DEBUG:-true}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - lostandfound-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "php-fpm", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_DATABASE:-lostandfound_db}
+      MYSQL_USER: ${DB_USERNAME:-lostandfound_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+    ports:
+      - "3306:3306"
+    networks:
+      - lostandfound-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "8080:8080"
+    networks:
+      - lostandfound-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  lostandfound-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
