@@ -1,6 +1,6 @@
 [submodule "backend"]
 	path = backend
-	url = ./backend
+	url = git@github.com:headexpanded/lostandfound-backend.git
 [submodule "frontend"]
 	path = frontend
-	url = ./frontend
+	url = git@github.com:headexpanded/lostandfound-frontend.git
